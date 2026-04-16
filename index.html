@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ACH2001 – Introdução à Programação – 2026/1 – Turma 94</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue:      #185FA5;
+    --blue-light:#E6F1FB;
+    --blue-mid:  #378ADD;
+    --green:     #3B6D11;
+    --green-light:#EAF3DE;
+    --amber:     #854F0B;
+    --amber-light:#FAEEDA;
+    --red:       #A32D2D;
+    --red-light: #FCEBEB;
+    --navy:      #0C447C;
+    --teal:      #0F6E56;
+    --teal-light:#E1F5EE;
+    --gray-bg:   #F7F6F3;
+    --gray-border:#D3D1C7;
+    --text:      #1a1a1a;
+    --text-muted:#5F5E5A;
+    --white:     #ffffff;
+    --radius:    10px;
+    --shadow:    0 2px 8px rgba(0,0,0,0.08);
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--gray-bg);
+    color: var(--text);
+    line-height: 1.65;
+    font-size: 15px;
+  }
+
+  /* ── Header ── */
+  .site-header {
+    background: linear-gradient(135deg, #0C447C 0%, #185FA5 60%, #378ADD 100%);
+    color: #fff;
+    padding: 2.5rem 2rem 2rem;
+  }
+  .header-inner { max-width: 860px; margin: 0 auto; }
+  .header-badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.35);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .05em;
+    padding: 3px 12px;
+    margin-bottom: .8rem;
+    text-transform: uppercase;
+  }
+  .site-header h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    line-height: 1.25;
+    margin-bottom: .5rem;
+  }
+  .site-header .subtitle {
+    font-size: .95rem;
+    opacity: .85;
+    margin-bottom: 1.2rem;
+  }
+  .header-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.4);
+    border-radius: 6px;
+    color: #fff;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 6px 14px;
+    transition: background .15s;
+  }
+  .header-link:hover { background: rgba(255,255,255,0.28); }
+  .header-link::before { content: "🔗"; font-size: 14px; }
+
+  /* ── Layout ── */
+  .page { max-width: 860px; margin: 0 auto; padding: 2rem 1.25rem 3rem; }
+
+  /* ── Section Titles ── */
+  .section-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--navy);
+    border-left: 4px solid var(--blue-mid);
+    padding-left: .7rem;
+    margin: 2.5rem 0 1rem;
+  }
+
+  /* ── Alert banner ── */
+  .alert {
+    border-radius: var(--radius);
+    padding: .7rem 1rem;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: .6rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .alert-red   { background: var(--red-light);   color: var(--red);   border-left: 3px solid var(--red); }
+  .alert-amber { background: var(--amber-light); color: var(--amber); border-left: 3px solid var(--amber); }
+  .alert-icon  { font-size: 16px; flex-shrink: 0; }
+
+  /* ── Class day card ── */
+  .day-card {
+    background: var(--white);
+    border: 1px solid var(--gray-border);
+    border-radius: var(--radius);
+    margin-bottom: .75rem;
+    overflow: hidden;
+  }
+  .day-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: .65rem 1rem;
+    background: var(--blue-light);
+    border-bottom: 1px solid #B5D4F4;
+  }
+  .day-date {
+    font-weight: 700;
+    color: var(--navy);
+    font-size: 14px;
+    white-space: nowrap;
+  }
+  .day-badge {
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 20px;
+    padding: 2px 9px;
+    white-space: nowrap;
+  }
+  .badge-exam  { background: #C0DD97; color: #3B6D11; }
+  .badge-ep    { background: #9FE1CB; color: #085041; }
+  .badge-holiday { background: #FAC775; color: #633806; }
+  .badge-revsub{ background: #B5D4F4; color: #0C447C; }
+
+  .day-body { padding: .75rem 1rem; }
+
+  .lesson-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: .3rem 0;
+    border-bottom: 1px dashed var(--gray-border);
+    font-size: 14px;
+  }
+  .lesson-item:last-child { border-bottom: none; }
+  .lesson-title { flex: 1; color: var(--text); }
+
+  .links-row { display: inline-flex; flex-wrap: wrap; gap: 5px; margin-top: 3px; }
+  .pill {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 20px;
+    padding: 2px 8px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: opacity .15s;
+  }
+  .pill:hover { opacity: .8; }
+  .pill-pdf  { background: #FCEBEB; color: var(--red); }
+  .pill-vid  { background: #FAEEDA; color: var(--amber); }
+  .pill-code { background: var(--teal-light); color: var(--teal); }
+  .pill-html { background: var(--blue-light); color: var(--navy); }
+
+  .activity-line {
+    margin-top: .45rem;
+    padding: .3rem .7rem;
+    background: #EEF2FF;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #3C3489;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .activity-line::before { content: "📋"; font-size: 13px; }
+
+  /* ── Info boxes ── */
+  .info-box {
+    background: var(--white);
+    border: 1px solid var(--gray-border);
+    border-radius: var(--radius);
+    padding: 1.1rem 1.25rem;
+    margin-bottom: 1rem;
+  }
+  .info-box h3 {
+    font-size: .95rem;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: .7rem;
+  }
+  .info-box p, .info-box li { font-size: 14px; color: var(--text-muted); }
+  .info-box ul { padding-left: 1.2rem; }
+  .info-box li { margin-bottom: .3rem; }
+
+  /* ── Deadlines table ── */
+  .deadline-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: .75rem;
+    margin-top: 1rem;
+  }
+  .deadline-card {
+    background: var(--white);
+    border: 1px solid var(--gray-border);
+    border-radius: var(--radius);
+    padding: .9rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .deadline-card .label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; }
+  .deadline-card .date  { font-size: 1.1rem; font-weight: 700; color: var(--navy); }
+  .deadline-card a      { font-size: 12px; color: var(--blue); text-decoration: none; }
+  .deadline-card a:hover{ text-decoration: underline; }
+
+  /* ── External links section ── */
+  .ext-link {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: .55rem 0;
+    border-bottom: 1px solid var(--gray-border);
+    font-size: 14px;
+    text-decoration: none;
+    color: var(--text);
+  }
+  .ext-link:last-child { border-bottom: none; }
+  .ext-link-icon { color: var(--blue-mid); font-size: 16px; flex-shrink: 0; }
+  .ext-link:hover .ext-link-title { text-decoration: underline; color: var(--blue); }
+  .ext-link-title { font-weight: 500; color: var(--blue); }
+  .ext-link-desc  { font-size: 12px; color: var(--text-muted); }
+
+  /* ── Warning note ── */
+  .warn-note {
+    background: #FFF8E7;
+    border: 1px solid #FAC775;
+    border-radius: var(--radius);
+    padding: .75rem 1rem;
+    font-size: 13px;
+    color: #633806;
+    font-weight: 500;
+    margin-top: 1.25rem;
+  }
+  .warn-note::before { content: "⚠️  "; }
+
+  /* ── Formula box ── */
+  .formula {
+    background: var(--gray-bg);
+    border: 1px dashed var(--gray-border);
+    border-radius: 6px;
+    padding: .5rem .8rem;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    color: var(--navy);
+    margin: .4rem 0;
+  }
+
+  /* ── Footer ── */
+  footer {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--gray-border);
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════ HEADER ══════════ -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="header-badge">EACH – USP</div>
+    <h1>ACH2001 – Introdução à Programação</h1>
+    <p class="subtitle">1º Semestre de 2026 · Turma 94 · Prof. Dr. Luciano Antonio Digiampietri</p>
+    <a class="header-link" href="http://uspdigital.usp.br/jupiterweb/obterDisciplina?sgldis=ACH2001&nomdis=" target="_blank">
+      Site da disciplina no Jupiterweb
+    </a>
+  </div>
+</header>
+
+<!-- ══════════ MAIN ══════════ -->
+<main class="page">
+
+  <!-- ─ Calendário ─ -->
+  <h2 class="section-title">Calendário da Disciplina</h2>
+
+  <div class="alert alert-red">
+    <span class="alert-icon">🚫</span>
+    <span><strong>23/02 a 27/02</strong> – Semana de Recepção de Calouros (não haverá aulas)</span>
+  </div>
+
+  <!-- 02/03 -->
+  <div class="day-card">
+    <div class="day-header"><span class="day-date">02/03/2026</span></div>
+    <div class="day-body">
+      <div class="lesson-item">
+        <div class="lesson-title">
+          Apresentação da Disciplina &amp; Problemas e Algoritmos
+          <div class="links-row">
+            <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/aula01.pdf">pdf aula 1</a>
+            <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/aula02.pdf">pdf aula 2</a>
+            <a class="pill pill-vid" href="https://youtu.be/ir8kSlda7VU">v02</a>
+          </div>
+        </div>
+      </div>
+      <div class="lesson-item">
+        <div class="lesson-title">
+          Computadores · Sistema Operacional e Linguagens de Programação
+          <div class="links-row">
+            <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/aula03.pdf">pdf aula 3</a>
+            <a class="pill pill-vid" href="https://youtu.be/LKOgwmmzOmw">v03</a>
+            <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/aula04.pdf">pdf aula 4</a>
+            <a class="pill pill-vid" href="https://youtu.be/8ARO9QrXhXI">v04</a>
+          </div>
+        </div>
+      </div>
+      <div class="activity-line">
+        Atividade Semanal Sugerida 1
+        <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/ACH2001_AtividadeSemanal01.pdf">pdf</a>
+        <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/AtividadeSemanal01.c">código</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 09/03 -->
+  <div class="day-card">
+    <div class="day-header"><span class="day-date">09/03/2026</span></div>
+    <div class="day-body">
+      <div class="lesson-item">
+        <div class="lesson-title">
+          Um Primeiro Programa (1 e 2)
+          <div class="links-row">
+            <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/aula05.pdf">pdf 5</a>
+            <a class="pill pill-vid" href="https://youtu.be/4zwCdHnxmXU">v05</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula05_PrimeiroCodigo.c">c1</a>
+            <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/aula06.pdf">pdf 6</a>
+            <a class="pill pill-vid" href="https://youtu.be/xbo-iIYAsis">v06</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula06_printf1.c">c1</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula06_printf2.c">c2</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula06_printf3.c">c3</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula06_printf4.c">c4</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula06_printf5.c">c5</a>
+          </div>
+        </div>
+      </div>
+      <div class="lesson-item">
+        <div class="lesson-title">
+          Variáveis &amp; Funções
+          <div class="links-row">
+            <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/aula07.pdf">pdf 7</a>
+            <a class="pill pill-vid" href="https://youtu.be/8paHwOWvxko">v07</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula07_variaveis1.c">c1</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula07_variaveis2.c">c2</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula07_variaveis3.c">c3</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula07_divisaoInteira.c">c4</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula07_NaN.c">c5</a>
+            <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/aula08.pdf">pdf 8</a>
+            <a class="pill pill-vid" href="https://youtu.be/VbYOt_Ocy-E">v08</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula08_AreaPiscina1.c">c1</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula08_AreaCasa1.c">c2</a>
+          </div>
+          <div style="font-size:12px;color:#5F5E5A;margin-top:4px;">
+            Tabela de caracteres especiais:
+            <a class="pill pill-html" href="http://www.each.usp.br/digiampietri/ACH2023/tabelasemc.html">html</a>
+          </div>
+        </div>
+      </div>
+      <div class="activity-line">
+        Atividade Semanal Sugerida 2
+        <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/ACH2001_AtividadeSemanal02.pdf">pdf</a>
+        <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/AtividadeSemanal02.c">código</a>
+      </div>
+      <div class="activity-line">
+        Atividade Semanal Sugerida 3
+        <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/ACH2001_AtividadeSemanal03.pdf">pdf</a>
+        <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/AtividadeSemanal03.c">código</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 16/03 -->
+  <div class="day-card">
+    <div class="day-header"><span class="day-date">16/03/2026</span></div>
+    <div class="day-body">
+      <div class="lesson-item">
+        <div class="lesson-title">
+          Type Casting e Escopo de Variáveis
+          <div class="links-row">
+            <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/aula09.pdf">pdf</a>
+            <a class="pill pill-vid" href="https://youtu.be/-nQzumSthyQ">v09</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula09_printf.c">c1</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula09_Trunca.c">c2</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula09_AreaCasa.c">c4</a>
+          </div>
+        </div>
+      </div>
+      <div class="lesson-item">
+        <div class="lesson-title">
+          Condicionais (parte 1)
+          <div class="links-row">
+            <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/aula10.pdf">pdf</a>
+            <a class="pill pill-vid" href="https://youtu.be/yInp92X7gRw">v10</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula10_AreaCasa_Condicional1.c">c2</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula10_AreaCasa_Condicional2.c">c3</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula10_AreaCasa_Final.c">c10</a>
+          </div>
+        </div>
+      </div>
+      <div class="activity-line">
+        Atividade Semanal Sugerida 4
+        <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/ACH2001_AtividadeSemanal04.pdf">pdf</a>
+        <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/AtividadeSemanal04.c">código</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 23/03 -->
+  <div class="day-card">
+    <div class="day-header"><span class="day-date">23/03/2026</span></div>
+    <div class="day-body">
+      <div class="lesson-item">
+        <div class="lesson-title">
+          Condicionais (parte 2)
+          <div class="links-row">
+            <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/aula11.pdf">pdf</a>
+            <a class="pill pill-vid" href="https://youtu.be/BrbuOr676XI">v11</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula11_AreaCasa.c">c1</a>
+          </div>
+        </div>
+      </div>
+      <div class="lesson-item">
+        <div class="lesson-title">
+          Operadores Lógicos
+          <div class="links-row">
+            <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/aula12.pdf">pdf</a>
+            <a class="pill pill-vid" href="https://youtu.be/jBuHWdkwvsA">v12</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula12_AreaCasa_Operadores1.c">c1</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula12_MultiplosOperadores.c">c4</a>
+          </div>
+        </div>
+      </div>
+      <div class="lesson-item">
+        <div class="lesson-title">
+          Condicionais (parte 3)
+          <div class="links-row">
+            <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/aula13.pdf">pdf</a>
+            <a class="pill pill-vid" href="https://youtu.be/IPaD-orfLNQ">v13</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula13_AreaCasa_IfsAninhados.c">c1</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula13_AreaCasa_SwitchCase1.c">c2</a>
+          </div>
+        </div>
+      </div>
+      <div class="activity-line">
+        Atividade Semanal Sugerida 5
+        <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/ACH2001_AtividadeSemanal05.pdf">pdf</a>
+        <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/AtividadeSemanal05.c">código</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Semana Santa -->
+  <div class="alert alert-red" style="margin-bottom:.75rem;">
+    <span class="alert-icon">🚫</span>
+    <span><strong>30/03 a 03/04</strong> – Semana Santa (não haverá aula)</span>
+  </div>
+
+  <!-- 06/04 -->
+  <div class="day-card">
+    <div class="day-header"><span class="day-date">06/04/2026</span></div>
+    <div class="day-body">
+      <div class="lesson-item">
+        <div class="lesson-title">
+          Laços (parte 1)
+          <div class="links-row">
+            <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/aula14.pdf">pdf</a>
+            <a class="pill pill-vid" href="https://youtu.be/a3l48dPVHok">v14</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula14_AreaCasa_Laco1.c">c2</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula14_AreaCasa_Laco4.c">c5</a>
+          </div>
+        </div>
+      </div>
+      <div class="lesson-item">
+        <div class="lesson-title">
+          Laços (parte 2)
+          <div class="links-row">
+            <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/aula15.pdf">pdf</a>
+            <a class="pill pill-vid" href="https://youtu.be/nAVeU1Y6FrA">v15</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula15_AreaCasa_Laco1.c">c1</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula15_AreaCasa_Laco3.c">c3</a>
+          </div>
+        </div>
+      </div>
+      <div class="activity-line">
+        Atividade Semanal Sugerida 6
+        <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/ACH2001_AtividadeSemanal06.pdf">pdf</a>
+        <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/AtividadeSemanal06.c">código</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 13/04 -->
+  <div class="day-card">
+    <div class="day-header"><span class="day-date">13/04/2026</span></div>
+    <div class="day-body">
+      <div class="lesson-item">
+        <div class="lesson-title">
+          Laços (parte 3)
+          <div class="links-row">
+            <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/aula16.pdf">pdf</a>
+            <a class="pill pill-vid" href="https://youtu.be/AuVlpC7f1L8">v16</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula16_AreaCasa_Laco1.c">c1</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula16_Expressoes1.c">c7</a>
+          </div>
+        </div>
+      </div>
+      <div class="lesson-item">
+        <div class="lesson-title">
+          Alocação de Memória
+          <div class="links-row">
+            <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/aula17.pdf">pdf</a>
+            <a class="pill pill-vid" href="https://youtu.be/29X-KXjrTkM">v17</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula17_Memoria1.c">c1</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula17_Memoria5.c">c5</a>
+          </div>
+        </div>
+      </div>
+      <div class="activity-line">
+        Atividade Semanal Sugerida 7
+        <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/ACH2001_AtividadeSemanal07.pdf">pdf</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tiradentes -->
+  <div class="alert alert-amber" style="margin-bottom:.75rem;">
+    <span class="alert-icon">📅</span>
+    <span><strong>20/04/2026</strong> – Emenda de Tiradentes (não haverá aula)</span>
+  </div>
+
+  <!-- 27/04 -->
+  <div class="day-card">
+    <div class="day-header"><span class="day-date">27/04/2026</span></div>
+    <div class="day-body">
+      <div class="lesson-item">
+        <div class="lesson-title">
+          Arranjos (parte 1 e 2)
+          <div class="links-row">
+            <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/aula18.pdf">pdf 18</a>
+            <a class="pill pill-vid" href="https://youtu.be/wjkzSOQ103c">v18</a>
+            <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/aula19.pdf">pdf 19</a>
+            <a class="pill pill-vid" href="https://youtu.be/UmvuGKJZTls">v19</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula18_Arranjos1.c">c1</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula19_Arranjos1.c">c4</a>
+          </div>
+        </div>
+      </div>
+      <div class="activity-line">
+        Atividade Semanal Sugerida 8
+        <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/ACH2001_AtividadeSemanal08.pdf">pdf</a>
+        <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/AtividadeSemanal08.c">código</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 04/05 -->
+  <div class="day-card">
+    <div class="day-header"><span class="day-date">04/05/2026</span></div>
+    <div class="day-body">
+      <div class="lesson-item">
+        <div class="lesson-title">
+          Arranjos (parte 3) &amp; Revisão para Prova
+          <div class="links-row">
+            <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/aula20.pdf">pdf</a>
+            <a class="pill pill-vid" href="https://youtu.be/EoIwoBqDypk">v20</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula20_ArranjosCopia1.c">c1</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula20_ArranjosMedia1.c">c4</a>
+          </div>
+        </div>
+      </div>
+      <div class="activity-line">
+        Atividade Semanal Sugerida 9
+        <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/ACH2001_AtividadeSemanal09.pdf">pdf</a>
+        <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/AtividadeSemanal09.c">código</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Prova 1 -->
+  <div class="day-card">
+    <div class="day-header">
+      <span class="day-date">11/05/2026</span>
+      <span class="day-badge badge-exam">✏️ Prova 1</span>
+    </div>
+    <div class="day-body">
+      <div class="lesson-item">
+        <div class="lesson-title">
+          Exemplo de Prova
+          <div class="links-row">
+            <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/ExemploDeProva.pdf">pdf</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 18/05 -->
+  <div class="day-card">
+    <div class="day-header"><span class="day-date">18/05/2026</span></div>
+    <div class="day-body">
+      <div class="lesson-item">
+        <div class="lesson-title">
+          Caracteres
+          <div class="links-row">
+            <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/aula21.pdf">pdf</a>
+            <a class="pill pill-vid" href="https://youtu.be/__hriVcgWwo">v21</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula21_Caracteres1.c">c1</a>
+          </div>
+        </div>
+      </div>
+      <div class="lesson-item">
+        <div class="lesson-title">
+          Matrizes (partes 1 e 2)
+          <div class="links-row">
+            <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/aula22.pdf">pdf 22</a>
+            <a class="pill pill-vid" href="https://youtu.be/ujfKThNN-N4">v22</a>
+            <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/aula23.pdf">pdf 23</a>
+            <a class="pill pill-vid" href="https://youtu.be/pBLeLk1cwgU">v23</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula22_Matriz1.c">c1</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula23_Matriz1.c">c5</a>
+          </div>
+        </div>
+      </div>
+      <div class="activity-line">
+        Atividade Semanal Sugerida 10
+        <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/ACH2001_AtividadeSemanal10.pdf">pdf</a>
+        <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/AtividadeSemanal10.c">código</a>
+      </div>
+      <div class="activity-line">
+        Atividade Semanal Sugerida 11
+        <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/ACH2001_AtividadeSemanal11.pdf">pdf</a>
+        <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/AtividadeSemanal11.c">código</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- EP 1 -->
+  <div class="day-card">
+    <div class="day-header">
+      <span class="day-date">EP 1 – entrega até 24/05/2026</span>
+      <span class="day-badge badge-ep">📦 EP 1</span>
+    </div>
+    <div class="day-body">
+      <div class="lesson-item">
+        <div class="lesson-title">
+          Enunciado do EP 1
+          <div class="links-row">
+            <a class="pill pill-html" href="https://each.uspnet.usp.br/digiampietri/ACH2001/ep1/">html</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 25/05 -->
+  <div class="day-card">
+    <div class="day-header"><span class="day-date">25/05/2026</span></div>
+    <div class="day-body">
+      <div class="lesson-item">
+        <div class="lesson-title">
+          Estruturas (partes 1 e 2) &amp; Leitura da Entrada
+          <div class="links-row">
+            <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/aula25.pdf">pdf 25</a>
+            <a class="pill pill-vid" href="https://youtu.be/PfC6rsrOZhg">v25</a>
+            <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/aula26.pdf">pdf 26</a>
+            <a class="pill pill-vid" href="https://youtu.be/VYvn1-Gkhy8">v26</a>
+            <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/aula27.pdf">pdf 27</a>
+            <a class="pill pill-vid" href="https://youtu.be/CbZAvbERhEY">v27</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula25_Estrutura1.c">c1</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula26_Estrutura1.c">c2</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula27_Leitura1.c">c3</a>
+          </div>
+        </div>
+      </div>
+      <div class="activity-line">
+        Atividade Semanal Sugerida 12
+        <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/ACH2001_AtividadeSemanal12.pdf">pdf</a>
+        <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/AtividadeSemanal12.c">código</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 01/06 -->
+  <div class="day-card">
+    <div class="day-header"><span class="day-date">01/06/2026</span></div>
+    <div class="day-body">
+      <div class="lesson-item">
+        <div class="lesson-title">
+          Busca Sequencial e Binária
+          <div class="links-row">
+            <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/aula28.pdf">pdf</a>
+            <a class="pill pill-vid" href="https://youtu.be/GLdqfaHxo8o">v28</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula28_BuscaSequencial.c">c1</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula28_BuscaBinaria.c">c3</a>
+          </div>
+        </div>
+      </div>
+      <div class="lesson-item">
+        <div class="lesson-title">
+          Ordenação
+          <div class="links-row">
+            <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/aula29.pdf">pdf</a>
+            <a class="pill pill-vid" href="https://youtu.be/fpnGMNgtjq4">v29</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula29_BubbleSort.c">c1</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula29_SelectionSort1.c">c2</a>
+          </div>
+        </div>
+      </div>
+      <div class="activity-line">
+        Atividade Semanal Sugerida 13
+        <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/ACH2001_AtividadeSemanal13.pdf">pdf</a>
+        <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/AtividadeSemanal13.c">código</a>
+      </div>
+      <div class="activity-line">
+        Atividade Semanal Sugerida 14
+        <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/ACH2001_AtividadeSemanal14.pdf">pdf</a>
+        <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/AtividadeSemanal14.c">código</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 08/06 -->
+  <div class="day-card">
+    <div class="day-header"><span class="day-date">08/06/2026</span></div>
+    <div class="day-body">
+      <div class="lesson-item">
+        <div class="lesson-title">
+          Lista Ligada
+          <div class="links-row">
+            <a class="pill pill-pdf" href="https://each.uspnet.usp.br/digiampietri/ACH2001/aula30.pdf">pdf</a>
+            <a class="pill pill-vid" href="https://youtu.be/lZnwWb9Beg8">v30</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula30_ListaSimples1.c">c1</a>
+            <a class="pill pill-code" href="https://each.uspnet.usp.br/digiampietri/ACH2001/codigos/Aula30_ListaSimples2.c">c2</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 15/06 -->
+  <div class="day-card">
+    <div class="day-header"><span class="day-date">15/06/2026</span></div>
+    <div class="day-body">
+      <div class="lesson-item"><div class="lesson-title">Aula de dúvidas e exercícios</div></div>
+    </div>
+  </div>
+
+  <!-- EP 2 -->
+  <div class="day-card">
+    <div class="day-header">
+      <span class="day-date">EP 2 – entrega até 21/06/2026</span>
+      <span class="day-badge badge-ep">📦 EP 2</span>
+    </div>
+    <div class="day-body">
+      <div class="lesson-item">
+        <div class="lesson-title">
+          Enunciado do EP 2
+          <div class="links-row">
+            <a class="pill pill-html" href="https://each.uspnet.usp.br/digiampietri/ACH2001/ep2/">html</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Prova 2 -->
+  <div class="day-card">
+    <div class="day-header">
+      <span class="day-date">22/06/2026</span>
+      <span class="day-badge badge-exam">✏️ Prova 2</span>
+    </div>
+    <div class="day-body"><div class="lesson-item"><div class="lesson-title">Prova 2</div></div></div>
+  </div>
+
+  <!-- Prova Substitutiva -->
+  <div class="day-card">
+    <div class="day-header">
+      <span class="day-date">29/06/2026</span>
+      <span class="day-badge badge-revsub">📄 Prova Substitutiva</span>
+    </div>
+    <div class="day-body">
+      <div class="lesson-item"><div class="lesson-title">Apenas para quem não fez uma das provas e não está reprovado por faltas</div></div>
+    </div>
+  </div>
+
+  <!-- Vistas -->
+  <div class="day-card">
+    <div class="day-header">
+      <span class="day-date">06/07/2026 – Vistas às Provas</span>
+    </div>
+    <div class="day-body">
+      <div class="lesson-item"><div class="lesson-title">Esclarecimento de dúvidas sobre as provas — das 19h às 20h, sala 110P do A1</div></div>
+    </div>
+  </div>
+
+  <!-- Recuperação -->
+  <div class="day-card">
+    <div class="day-header">
+      <span class="day-date">20/07/2026 – Prova de Recuperação</span>
+      <span class="day-badge badge-exam">⚠️ Recuperação</span>
+    </div>
+    <div class="day-body">
+      <div class="lesson-item"><div class="lesson-title">Duas turmas, às 19h00</div></div>
+    </div>
+  </div>
+
+  <!-- ─ Prazos ─ -->
+  <h2 class="section-title">Prazos dos EPs</h2>
+  <div class="deadline-grid">
+    <div class="deadline-card">
+      <span class="label">EP 1</span>
+      <span class="date">24/05/2026</span>
+      <a href="https://each.uspnet.usp.br/digiampietri/ACH2001/ep1/">Ver enunciado →</a>
+    </div>
+    <div class="deadline-card">
+      <span class="label">EP 2</span>
+      <span class="date">21/06/2026</span>
+      <a href="https://each.uspnet.usp.br/digiampietri/ACH2001/ep2/">Ver enunciado →</a>
+    </div>
+    <div class="deadline-card">
+      <span class="label">Entrega via</span>
+      <span class="date" style="font-size:.9rem;">eDisciplinas</span>
+      <a href="https://edisciplinas.usp.br/">edisciplinas.usp.br →</a>
+    </div>
+  </div>
+
+  <!-- ─ Critérios ─ -->
+  <h2 class="section-title">Critérios de Avaliação e Recuperação</h2>
+  <div class="info-box">
+    <h3>Aprovação Direta</h3>
+    <p>Será aprovado todo aluno com <strong>NotaFinal1 ≥ 5</strong> e presença <strong>≥ 70%</strong>.</p>
+  </div>
+  <div class="info-box">
+    <h3>Direito à Recuperação</h3>
+    <p>Alunos com NotaFinal1 ≥ 3 e presença ≥ 70% que não foram aprovados diretamente podem fazer a prova de recuperação.</p>
+  </div>
+  <div class="info-box">
+    <h3>Nota após Recuperação</h3>
+    <p>Se NotaRec ≥ 5:</p>
+    <div class="formula">NotaFinalRec = max(5 ; (NotaFinal1 + NotaRec) / 2)</div>
+    <p style="margin-top:.5rem;">Se NotaRec &lt; 5:</p>
+    <div class="formula">NotaFinalRec = max(NotaFinal1 ; (NotaFinal1 + NotaRec) / 2)</div>
+  </div>
+  <div class="info-box">
+    <h3>Integridade Acadêmica</h3>
+    <p>Qualquer tentativa de fraude nas atividades ou exercícios práticos implicará em <strong>zero</strong> na respectiva atividade.</p>
+  </div>
+
+  <div class="warn-note">
+    Na data máxima de entrega dos EPs, bem como nos sete dias anteriores, não serão esclarecidas dúvidas sobre os EPs. Na data da prova, bem como nos dois dias anteriores, não serão esclarecidas dúvidas sobre os assuntos das provas.
+  </div>
+
+  <!-- ─ Bibliografia ─ -->
+  <h2 class="section-title">Bibliografia</h2>
+  <div class="info-box">
+    <ul>
+      <li>PAES, R.B. <em>Introdução à Programação com a Linguagem C.</em> Novatec, 2017.</li>
+      <li>SHILDT, H. <em>C completo e total.</em> 3ª ed. Makron, 1997.</li>
+    </ul>
+  </div>
+
+  <!-- ─ Links Extras ─ -->
+  <h2 class="section-title">Conteúdos Extras &amp; Links Interessantes</h2>
+  <div class="info-box">
+    <a class="ext-link" href="https://www.youtube.com/playlist?list=PL_JAaU8k6DQWsh1mt8vwpP8YsH6Xhgq2N" target="_blank">
+      <span class="ext-link-icon">▶</span>
+      <div>
+        <div class="ext-link-title">Playlist Introdução à Programação 2021 (em C)</div>
+        <div class="ext-link-desc">YouTube – Prof. Digiampietri</div>
+      </div>
+    </a>
+    <a class="ext-link" href="https://www.youtube.com/playlist?list=PL_JAaU8k6DQWCMI7JanV7_894BnP3dPgm" target="_blank">
+      <span class="ext-link-icon">▶</span>
+      <div>
+        <div class="ext-link-title">Playlist Introdução à Programação 2020 (em Java)</div>
+        <div class="ext-link-desc">YouTube – Prof. Digiampietri</div>
+      </div>
+    </a>
+    <a class="ext-link" href="https://www.youtube.com/playlist?list=PLxI8Can9yAHfK6wdaMUO74lmotAP7J7bi" target="_blank">
+      <span class="ext-link-icon">▶</span>
+      <div>
+        <div class="ext-link-title">Programação de Computadores – UNIVESP (Java)</div>
+        <div class="ext-link-desc">Disciplina online completa</div>
+      </div>
+    </a>
+    <a class="ext-link" href="https://www.ime.usp.br/~macmulti/" target="_blank">
+      <span class="ext-link-icon">📘</span>
+      <div>
+        <div class="ext-link-title">Projeto MCA Multimídia</div>
+        <div class="ext-link-desc">Material didático extra para Introdução à Programação</div>
+      </div>
+    </a>
+    <a class="ext-link" href="http://pythontutor.com/visualize.html#mode=edit" target="_blank">
+      <span class="ext-link-icon">🔍</span>
+      <div>
+        <div class="ext-link-title">Python Tutor</div>
+        <div class="ext-link-desc">Visualização gráfica de memória durante execução de programas (C, Java, Python…)</div>
+      </div>
+    </a>
+    <a class="ext-link" href="http://www.each.usp.br/digiampietri/ACH2001/Tutorial_ComoInstalarGCCNoWindows10.pdf" target="_blank">
+      <span class="ext-link-icon">⚙</span>
+      <div>
+        <div class="ext-link-title">Tutorial: Instalar GCC no Windows</div>
+        <div class="ext-link-desc">PDF com passo a passo</div>
+      </div>
+    </a>
+  </div>
+
+  <div class="info-box">
+    <h3>Compiladores Online</h3>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:.5rem;">
+      <a class="pill pill-html" style="font-size:13px;padding:5px 14px;" href="https://www.onlinegdb.com/online_c_compiler" target="_blank">OnlineGDB</a>
+      <a class="pill pill-html" style="font-size:13px;padding:5px 14px;" href="https://www.programiz.com/c-programming/online-compiler/" target="_blank">Programiz</a>
+      <a class="pill pill-html" style="font-size:13px;padding:5px 14px;" href="https://repl.it/languages/c" target="_blank">Replit</a>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  ACH2001 – Introdução à Programação · 1º Semestre de 2026 · Turma 94<br>
+  Prof. Dr. Luciano Antonio Digiampietri – EACH/USP
+</footer>
+
+</body>
+</html>
